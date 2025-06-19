@@ -2,84 +2,133 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Air Monitoring System</title>
   <style>
+    /* Body styling with a gradient background */
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      color: #333;
       text-align: center;
     }
-    h1 {
-      color: #333;
-      margin-bottom: 30px;
-    }
-    #display {
-      border: 5px solid #333;
-      border-radius: 10px;
+    /* Header style */
+    header {
+      background-color: rgba(255, 255, 255, 0.9);
       padding: 20px;
-      display: inline-block;
-      background: #fff;
-      min-width: 300px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      color: #0077b6;
+    }
+    /* Main display area style */
+    #display {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      margin: 50px auto;
+      padding: 30px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    #display .label {
+      font-size: 1.2em;
+      margin-bottom: 10px;
     }
     #ppm {
-      font-size: 48px;
-      margin: 10px 0;
+      font-size: 4em;
       font-weight: bold;
+      margin: 20px 0;
     }
     #condition {
-      font-size: 32px;
-      font-weight: bold;
+      font-size: 2em;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      display: inline-block;
+      min-width: 150px;
+    }
+    /* Color classes for condition */
+    .good {
+      color: #fff;
+      background-color: #28a745;
+    }
+    .hazard {
+      color: #fff;
+      background-color: #dc3545;
+    }
+    /* Footer style */
+    footer {
+      margin-top: 50px;
+      padding: 10px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.5);
     }
   </style>
 </head>
 <body>
-  <h1>Air Monitoring System</h1>
+  <header>
+    <h1>Air Monitoring System</h1>
+  </header>
   <div id="display">
-    <div id="title">Methane Concentration (ppm)</div>
-    <div id="ppm">--</div>
-    <div id="condition">Status Unknown</div>
+    <div class="label">Methane Concentration (ppm)</div>
+    <div id="ppm" class="measurement">--</div>
+    <div id="condition" class="condition">Status Unknown</div>
   </div>
+  <footer>
+    &copy; 2025 Air Monitoring System
+  </footer>
 
+  <!-- JavaScript: Reads URL parameters and updates the display -->
   <script>
-    // Function to read query parameters from URL
+    // Function to extract query parameters and return as an object
     function getQueryParams() {
       let params = {};
       let queryString = window.location.search.substring(1);
       let vars = queryString.split("&");
-      for(let i = 0; i < vars.length; i++) {
-        let pair = vars[i].split("=");
-        if(pair.length === 2){
-          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+      for (let i = 0; i < vars.length; i++) {
+        if(vars[i]){
+          let pair = vars[i].split("=");
+          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
         }
       }
       return params;
     }
 
-    // Update page based on URL parameters: 'ppm' and 'cond'
-    window.onload = function() {
+    // Update the page after DOM loads
+    document.addEventListener("DOMContentLoaded", function() {
       const params = getQueryParams();
       const ppmElem = document.getElementById("ppm");
       const condElem = document.getElementById("condition");
 
+      // If a methane value is passed in the query, display it
       if (params.ppm) {
         ppmElem.textContent = params.ppm;
       }
+      // Set the condition styling based on the parameter "cond"
       if (params.cond) {
         let cond = params.cond.toLowerCase();
         if (cond === "good") {
           condElem.textContent = "Good";
-          condElem.style.color = "green";
+          condElem.classList.remove("hazard");
+          condElem.classList.add("good");
         } else if (cond === "hazard") {
           condElem.textContent = "Hazard";
-          condElem.style.color = "red";
+          condElem.classList.remove("good");
+          condElem.classList.add("hazard");
         } else {
           condElem.textContent = params.cond;
-          condElem.style.color = "#333";
+          condElem.classList.remove("good", "hazard");
         }
       }
-    };
+    });
   </script>
 </body>
 </html>
