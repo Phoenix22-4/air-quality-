@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Air Monitoring System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    #display {
+      border: 5px solid #333;
+      border-radius: 10px;
+      padding: 20px;
+      display: inline-block;
+      background: #fff;
+      min-width: 300px;
+    }
+    #ppm {
+      font-size: 48px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    #condition {
+      font-size: 32px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Air Monitoring System</h1>
+  <div id="display">
+    <div id="title">Methane Concentration (ppm)</div>
+    <div id="ppm">--</div>
+    <div id="condition">Status Unknown</div>
+  </div>
+
+  <script>
+    // Function to read query parameters from URL
+    function getQueryParams() {
+      let params = {};
+      let queryString = window.location.search.substring(1);
+      let vars = queryString.split("&");
+      for(let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split("=");
+        if(pair.length === 2){
+          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+      }
+      return params;
+    }
+
+    // Update page based on URL parameters: 'ppm' and 'cond'
+    window.onload = function() {
+      const params = getQueryParams();
+      const ppmElem = document.getElementById("ppm");
+      const condElem = document.getElementById("condition");
+
+      if (params.ppm) {
+        ppmElem.textContent = params.ppm;
+      }
+      if (params.cond) {
+        let cond = params.cond.toLowerCase();
+        if (cond === "good") {
+          condElem.textContent = "Good";
+          condElem.style.color = "green";
+        } else if (cond === "hazard") {
+          condElem.textContent = "Hazard";
+          condElem.style.color = "red";
+        } else {
+          condElem.textContent = params.cond;
+          condElem.style.color = "#333";
+        }
+      }
+    };
+  </script>
+</body>
+</html>
